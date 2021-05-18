@@ -5,6 +5,12 @@ from typing import Dict, List, Any, Union
 json_link = json.loads(requests.get("https://json-stat.org/samples/oecd.json").text)
 
 
+# I made the information of the best and worst countries for all years, 
+# but you can uncomment a couple of lines at the very bottom and get 
+# a version working through the console with the choice of the year 
+# for which you need to get information.
+
+
 # function for getting data for the selected year
 def with_inp(my_json: Dict[str, Any], year: str) -> str:
     ready_data: Dict[str, Dict[str, List[str]]] = main(my_json)
