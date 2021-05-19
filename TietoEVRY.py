@@ -1,13 +1,12 @@
 import json
 import requests
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any, Union, Optional
 
 json_link = json.loads(requests.get("https://json-stat.org/samples/oecd.json").text)
 
-
-# I made the information of the best and worst countries for all years, 
-# but you can uncomment a couple of lines at the very bottom and get 
-# a version working through the console with the choice of the year 
+# I made the information of the best and worst countries for all years,
+# but you can uncomment a couple of lines at the very bottom and get
+# a version working through the console with the choice of the year
 # for which you need to get information.
 
 
@@ -39,12 +38,21 @@ def part_of_string(array: Dict[str, List[str]]) -> str:
     result: str = ""
     for i in array.keys():
         result += "   " + i + ":" + "\n"
-        count: int = 1
+
+        count: int = 0
+        prev: Optional[str] = None
         for j in array[i]:
+            # a sequence number is awarded to each unique element,
+            # so I compare with the previous one and
+            # increment it by 1 if it is different
+            if j[1] != prev:
+                prev = j[1]
+                count += 1
+
             result += "         " + str(count) + \
                       ". " + j[0] + ": " + \
                       str(j[1]) + "%" + "\n"
-            count += 1
+
     return result
 
 
@@ -207,6 +215,7 @@ def positive_rate():
                                               test_countries,
                                               test_values,
                                               test_years)
+
     x = all_data_to_text(min_max(test_dict_by_years)).split("\n")
     austria = float(x[2].split('. ')[1].split(': ')[1].split('%')[0])
     australia = float(x[3].split('. ')[1].split(': ')[1].split('%')[0])
