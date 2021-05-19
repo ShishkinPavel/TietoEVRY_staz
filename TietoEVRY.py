@@ -178,7 +178,9 @@ def test_repeated_rate():
                                               test_values,
                                               test_years)
     x = all_data_to_text(min_max(test_dict_by_years)).split()
+
     assert x.count('5.943826289%') == 5 * 2
+    assert x.count('1.') == 5 * 2
     for i in test_countries:
         assert x.count(i + ':') == 2
 
