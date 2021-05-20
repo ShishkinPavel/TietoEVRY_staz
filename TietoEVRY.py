@@ -223,10 +223,10 @@ def positive_rate():
                                               test_values,
                                               test_years)
 
-    x = all_data_to_text(min_max(test_dict_by_years)).split("\n")
-    austria = float(x[2].split('. ')[1].split(': ')[1].split('%')[0])
-    australia = float(x[3].split('. ')[1].split(': ')[1].split('%')[0])
-    assert austria < australia
+    x = all_data_to_text(min_max(test_dict_by_years)).split()
+    index_australia = x.index("Australia:")
+    index_austria = x.index("Austria:")
+    assert index_australia > index_austria
 
 
 #
