@@ -200,13 +200,15 @@ def americans_test():
                                               test_countries,
                                               test_values,
                                               test_years)
-    x = all_data_to_text(min_max(test_dict_by_years)).split("\n")
+    x = all_data_to_text(min_max(test_dict_by_years)).split()
 
     assert x[0] == '2003:'
-    assert x[2].split(". ")[1].split(": ")[0] == \
-           x[6].split(". ")[1].split(": ")[0] == "Australia"
-    assert x[3].split(". ")[1].split(": ")[0] == \
-           x[5].split(". ")[1].split(": ")[0] == "Austria"
+    index_australia_low = x.index("Australia:")
+    index_australia_high = x.index("Australia:", index_australia_low + 1)
+    index_austria_low = x.index("Austria:")
+    index_austria_high = x.index("Austria:", index_austria_low + 1)
+    assert index_australia_low < index_austria_low
+    assert index_australia_high > index_austria_high
 
 
 def positive_rate():
