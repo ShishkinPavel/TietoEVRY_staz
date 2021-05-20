@@ -1,8 +1,10 @@
 import json
 import requests
-from typing import Dict, List, Any, Union, Optional
+from typing import Dict, List, Union, Optional
 
 json_link = json.loads(requests.get("https://json-stat.org/samples/oecd.json").text)
+ADType = Dict[str, Dict[str, List[str]]]
+DBYType = Dict[str, List[str]]
 
 # I made the information of the best and worst countries for all years,
 # but you can uncomment a couple of lines at the very bottom and get
@@ -11,21 +13,21 @@ json_link = json.loads(requests.get("https://json-stat.org/samples/oecd.json").t
 
 
 # function for getting data for the selected year
-def with_inp(my_json: Dict[str, Any], year: str) -> str:
-    ready_data: Dict[str, Dict[str, List[str]]] = main(my_json)
+def with_inp(my_json: Dict, year: str) -> str:
+    ready_data: ADType = main(my_json)
     result: str = year + ":\n" + part_of_string(ready_data[year])
     return result
 
 
 # function for getting data for the all years
-def without_inp(my_json: Dict[str, Any]) -> str:
-    ready_data: Dict[str, Dict[str, List[str]]] = main(my_json)
+def without_inp(my_json: Dict) -> str:
+    ready_data: ADType = main(my_json)
     result: str = all_data_to_text(ready_data)
     return result
 
 
 # I made it into a separate function to make it easier to test
-def all_data_to_text(all_data: Dict[str, Dict[str, List[str]]]) -> str:
+def all_data_to_text(all_data: ADType) -> str:
     result: str = ""
     for every_i in all_data.keys():
         result += every_i + ":\n" + part_of_string(all_data[every_i])
@@ -34,14 +36,14 @@ def all_data_to_text(all_data: Dict[str, Dict[str, List[str]]]) -> str:
 
 # this part is the same when getting information for all
 # years and for one separate one, so I put it in a separate function
-def part_of_string(array: Dict[str, List[str]]) -> str:
+def part_of_string(dict_by_year: DBYType) -> str:
     result: str = ""
-    for i in array.keys():
+    for i in dict_by_year.keys():
         result += "   " + i + ":" + "\n"
 
         count: int = 0
         prev: Optional[str] = None
-        for j in array[i]:
+        for j in dict_by_year[i]:
             # a sequence number is awarded to each unique element,
             # so I compare with the previous one and
             # increment it by 1 if it is different
@@ -56,23 +58,23 @@ def part_of_string(array: Dict[str, List[str]]) -> str:
     return result
 
 
-def main(jj: Dict[str, Any]) -> Dict[str, Dict[str, List[str]]]:
-    len_year: int = jj["size"][2]
-    len_country: int = jj["size"][1]
-    countries = list(jj["dimension"]["area"]["category"]["label"].values())
-    values = list(jj["value"])
-    years = list(jj["dimension"]["year"]["category"]["index"])
+def main(my_json: Dict) -> ADType:
+    len_year: int = my_json["size"][2]
+    len_country: int = my_json["size"][1]
+    countries: List[str] = list(my_json["dimension"]["area"]["category"]["label"].values())
+    values: List[float] = list(my_json["value"])
+    years: List[str] = list(my_json["dimension"]["year"]["category"]["index"])
 
     # I decided to create a dictionary where the keys will be the years
     # and the values will be the country and rating,
     # so that it will be easier to work with the values further
-    dict_by_years: Dict[str, List[str]] = create_dict_by_years(len_year,
+    dict_by_years: DBYType = create_dict_by_years(len_year,
                                                                len_country,
                                                                countries,
                                                                values,
                                                                years)
 
-    result: Dict[str, Dict[str, List[str]]] = min_max(dict_by_years)
+    result: ADType = min_max(dict_by_years)
     return result
 
 
@@ -97,12 +99,12 @@ def create_dict_by_years(len_year: int,
     return result
 
 
-def min_max(dict_by_years: Dict[str, List[str]]) -> \
-        Dict[str, Dict[str, List[str]]]:
-    result: Dict[str, Dict[str, List[str]]] = dict()
+def min_max(dict_by_years: DBYType) -> \
+        ADType:
+    result: ADType = dict()
 
     for i in dict_by_years.keys():
-        actual_dict: Dict[str, List[str]] = dict()
+        actual_dict: DBYType = dict()
 
         actual_dict["3 countries with the lowest unemployment rate"] = minimum(dict_by_years[i])
         actual_dict["3 countries with the highest unemployment rate"] = maximum(dict_by_years[i])
