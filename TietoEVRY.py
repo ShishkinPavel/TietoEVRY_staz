@@ -6,6 +6,7 @@ json_link = json.loads(requests.get("https://json-stat.org/samples/oecd.json").t
 ADType = Dict[str, Dict[str, List[str]]]
 DBYType = Dict[str, List[str]]
 
+
 # I made the information of the best and worst countries for all years,
 # but you can uncomment a couple of lines at the very bottom and get
 # a version working through the console with the choice of the year
@@ -42,18 +43,18 @@ def part_of_string(dict_by_year: DBYType) -> str:
         result += "   " + i + ":" + "\n"
 
         count: int = 0
-        prev: Optional[str] = None
+        prev: Optional[float] = None
         for j in dict_by_year[i]:
             # a sequence number is awarded to each unique element,
             # so I compare with the previous one and
             # increment it by 1 if it is different
             if j[1] != prev:
-                prev = j[1]
+                prev = float(j[1])
                 count += 1
 
             result += "         " + str(count) + \
                       ". " + j[0] + ": " + \
-                      str(j[1]) + "%" + "\n"
+                      str(round(float(j[1]), 2)) + "%" + "\n"
 
     return result
 
@@ -69,10 +70,10 @@ def main(my_json: Dict) -> ADType:
     # and the values will be the country and rating,
     # so that it will be easier to work with the values further
     dict_by_years: DBYType = create_dict_by_years(len_year,
-                                                               len_country,
-                                                               countries,
-                                                               values,
-                                                               years)
+                                                  len_country,
+                                                  countries,
+                                                  values,
+                                                  years)
 
     result: ADType = min_max(dict_by_years)
     return result
@@ -181,7 +182,7 @@ def test_repeated_rate():
                                               test_years)
     x = all_data_to_text(min_max(test_dict_by_years)).split()
 
-    assert x.count('5.943826289%') == 5 * 2
+    assert x.count('5.94%') == 5 * 2
     assert x.count('1.') == 5 * 2
     for i in test_countries:
         assert x.count(i + ':') == 2
