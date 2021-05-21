@@ -203,6 +203,7 @@ def americans_test():
     x = all_data_to_text(min_max(test_dict_by_years)).split()
 
     assert x[0] == '2003:'
+    assert x.count("Australia:") == x.count("Austria:") == 2
     index_australia_low = x.index("Australia:")
     index_australia_high = x.index("Australia:", index_australia_low + 1)
     index_austria_low = x.index("Austria:")
@@ -211,7 +212,11 @@ def americans_test():
     assert index_australia_high > index_austria_high
 
 
-def positive_rate():
+def negative_rate():
+    # I am not an economist, but in theory there may be more 
+    # working people than the working population 
+    # of a particular country (for example - labor migration)
+    
     test_len_year = 1
     test_len_country: int = 2
     test_countries = ['Australia', 'Austria']
@@ -224,9 +229,13 @@ def positive_rate():
                                               test_years)
 
     x = all_data_to_text(min_max(test_dict_by_years)).split()
-    index_australia = x.index("Australia:")
-    index_austria = x.index("Austria:")
-    assert index_australia > index_austria
+    assert x.count("Australia:") == x.count("Austria:") == 2
+    index_australia_low = x.index("Australia:")
+    index_australia_high = x.index("Australia:", index_australia_low + 1)
+    index_austria_low = x.index("Austria:")
+    index_austria_high = x.index("Austria:", index_austria_low + 1)
+    assert index_australia_low > index_austria_low
+    assert index_australia_high < index_austria_high
 
 
 #
@@ -274,7 +283,7 @@ if __name__ == '__main__':
     correct_json()
     test_repeated_rate()
     americans_test()
-    positive_rate()
+    negative_rate()
 
     # # program
     data_selector = False
